@@ -1,5 +1,11 @@
-{
-  "nation": "Japan",
-  "region": "asia",
-  "capital": "tokyo"
-}
+[{
+    "nation": "Japan",
+    "region": "asia",
+    "capital": "tokyo"
+  },
+  {
+    "nation": "USA",
+    "region": "north-America",
+    "capital": "NY"
+  }
+]

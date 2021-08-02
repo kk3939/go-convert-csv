@@ -1,10 +1,12 @@
 package cmd
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -26,8 +28,8 @@ var rootCmd = &cobra.Command{
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
-		readJson()
-		convertCsv()
+		data := readJson()
+		convertCsv(data)
 	},
 }
 
@@ -61,7 +63,7 @@ func initConfig() {
 }
 
 // json を読み込む
-func readJson() {
+func readJson() []JsonType {
 	// main.go を起点としたpath
 	data, err := ioutil.ReadFile("./json_dir/sample.json")
 
@@ -71,24 +73,47 @@ func readJson() {
 		os.Exit(1)
 	}
 
-	dt := JsonType{}
+	var dt []JsonType
 
 	// data をバイトデータから変換
+	// 第二引数にポインタを渡すのが注意
 	if err := json.Unmarshal(data, &dt); err != nil {
 		fmt.Printf("Could not read data. %v", err)
 	}
 
-	fmt.Println(dt)
-
+	return dt
 }
 
-func convertCsv() {
-	fmt.Println("convert CSV is not set up.")
+// コンバートする
+func convertCsv(data []JsonType) {
+	csvf, err := os.Create("./csv_dir/converted.csv")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer csvf.Close()
+
+	writer := csv.NewWriter(csvf)
+	for i, d := range data {
+		var row []string
+
+		if i == 0 {
+			row = append(row, "Nation")
+			row = append(row, "Region")
+			row = append(row, "Capital")
+			writer.Write(row)
+		}
+		row = append(row, d.Nation)
+		row = append(row, d.Region)
+		row = append(row, d.Capital)
+		fmt.Println(row)
+		writer.Write(row)
+	}
+	writer.Flush()
 }
 
 //Jsonの型定義
 type JsonType struct {
-	Nation  string `json:"nation"`
-	Region  string `json:"region"`
-	Capital string `json:"capital"`
+	Nation  string
+	Region  string
+	Capital string
 }
