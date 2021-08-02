@@ -97,10 +97,11 @@ func convertCsv(data []JsonType) {
 		var row []string
 
 		if i == 0 {
-			row = append(row, "Nation")
-			row = append(row, "Region")
-			row = append(row, "Capital")
-			writer.Write(row)
+			var header []string
+			header = append(header, "Nation")
+			header = append(header, "Region")
+			header = append(header, "Capital")
+			writer.Write(header)
 		}
 		row = append(row, d.Nation)
 		row = append(row, d.Region)
